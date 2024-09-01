@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                         indicatorSize: TabBarIndicatorSize.label,
                         indicatorColor: Colors.transparent,
                         controller: _tabController,
+                        dividerColor: Colors.transparent,
                         isScrollable: true,
                         labelColor: Colors.white,
                         labelStyle: appstyle(24, Colors.white, FontWeight.bold),
@@ -92,9 +93,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                 child: TabBarView(
                     controller: _tabController,
                     children: [
-                      HomeWidget(male: _male),
-                      HomeWidget(male: _female),
-                      HomeWidget(male: _kids),
+                      HomeWidget(male: _male, tabIndex: 0,),
+                      HomeWidget(male: _female, tabIndex: 1,),
+                      HomeWidget(male: _kids, tabIndex: 2,),
                     ]
                 ),
               ),

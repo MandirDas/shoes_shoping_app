@@ -50,8 +50,8 @@ class BottomNavBar extends StatelessWidget {
                           mainscreenNotifier.pageIndex = 2;
                         },
                         icon: mainscreenNotifier.pageIndex == 2
-                            ? Ionicons.add
-                            :Ionicons.add_circle_outline,
+                            ? Ionicons.heart
+                            :Ionicons.heart_circle_outline,
                       ),
                       BottomNavWidget(
                         onTap: () {

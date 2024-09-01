@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes/controllers/product_provider.dart';
 import 'package:shoes/views/shared/product_card.dart';
+import 'package:shoes/views/ui/product_by_cart.dart';
+import 'package:shoes/views/ui/product_page.dart';
 
 import '../../models/sneaker_model.dart';
 import 'New_Shoes.dart';
@@ -9,13 +13,16 @@ import 'appstyle.dart';
 class HomeWidget extends StatelessWidget {
   const HomeWidget({
     super.key,
-    required Future<List<Sneakers>> male,
+    required Future<List<Sneakers>> male, required this.tabIndex,
   }) : _male = male;
 
   final Future<List<Sneakers>> _male;
+  final int tabIndex;
+
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
     return Column(
       children: [
         SizedBox(
@@ -34,12 +41,21 @@ class HomeWidget extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context,index){
                         final shoe = snapshot.data![index];
-                        return ProductCard(
-                            price: "\$${shoe.price}",
-                            catagory: shoe.category,
-                            id: shoe.id,
-                            name: shoe.name,
-                            image: shoe.imageUrl[0]);
+                        return GestureDetector(
+                          onTap: (){
+                            productNotifier.shoesSizes = shoe.sizes;
+                            // print(productNotifier.shoeSizes);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context)=> ProductPage(
+                                    id: shoe.id, category: shoe.category)));
+                          },
+                          child: ProductCard(
+                              price: "\$${shoe.price}",
+                              catagory: shoe.category,
+                              id: shoe.id,
+                              name: shoe.name,
+                              image: shoe.imageUrl[0]),
+                        );
                       });
                 }
               },
@@ -55,12 +71,17 @@ class HomeWidget extends StatelessWidget {
                   Text("Latest Shoes",
                     style: appstyle(24, Colors.black, FontWeight.bold),),
 
-                  Row(
-                    children: [
-                      Text("Show All",
-                        style: appstyle(22, Colors.black, FontWeight.bold),),
-                      Icon(Icons.arrow_right_sharp,size: 30,)
-                    ],
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>ProductByCat(tabIndex:tabIndex ,)));
+                    },
+                    child: Row(
+                      children: [
+                        Text("Show All",
+                          style: appstyle(22, Colors.black, FontWeight.bold),),
+                        Icon(Icons.arrow_right_sharp,size: 30,)
+                      ],
+                    ),
                   )
                 ],
               ),
