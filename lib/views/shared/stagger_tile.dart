@@ -17,12 +17,12 @@ class _StaggerTileState extends State<StaggerTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +34,7 @@ class _StaggerTileState extends State<StaggerTile> {
             ),
 
             Container(
-              padding: EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: 12),
               height: 80,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

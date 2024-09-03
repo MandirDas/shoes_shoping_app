@@ -1,9 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:shoes/services/helper.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes/controllers/favorites_provider.dart';
+import 'package:shoes/controllers/product_provider.dart';
 import 'package:shoes/views/shared/appstyle.dart';
 
-import '../../models/sneaker_model.dart';
 import '../shared/home_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,33 +17,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   late final TabController _tabController = TabController(length: 3, vsync: this);
 
-  late Future<List<Sneakers>> _male;
-  late Future<List<Sneakers>> _female;
-  late Future<List<Sneakers>> _kids;
 
-  void getMale(){
-    _male = Helper().getMaleSneaker();
-  }
 
-  void getFemale(){
-    _female = Helper().getFemaleSneaker();
-  }
-
-  void getKids(){
-    _kids = Helper().getKidsSneaker();
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getMale();
-    getFemale();
-    getKids();
-  }
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
+    productNotifier.getMale();
+    productNotifier.getKids();
+    productNotifier.getFemale();
+
+    var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
+    favoritesNotifier.getFavorites();
     return Scaffold(
       backgroundColor: const Color(0xFFE2E2E2),
       body:SizedBox(
@@ -56,7 +42,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                 image: DecorationImage(image:AssetImage("assets/images/top_image.png"),fit:BoxFit.fill),
               ),
               child: Container(
-                padding: EdgeInsets.only(left: 8,bottom: 15),
+                padding: const EdgeInsets.only(left: 8,bottom: 15),
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,9 +79,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                 child: TabBarView(
                     controller: _tabController,
                     children: [
-                      HomeWidget(male: _male, tabIndex: 0,),
-                      HomeWidget(male: _female, tabIndex: 1,),
-                      HomeWidget(male: _kids, tabIndex: 2,),
+                      HomeWidget(male: productNotifier.male, tabIndex: 0,),
+                      HomeWidget(male: productNotifier.female, tabIndex: 1,),
+                      HomeWidget(male: productNotifier.kids, tabIndex: 2,),
                     ]
                 ),
               ),

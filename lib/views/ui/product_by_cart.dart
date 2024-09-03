@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:provider/provider.dart';
 import 'package:shoes/views/shared/category_btn.dart';
 import 'package:shoes/views/shared/custom_spacer.dart';
-import 'package:shoes/views/shared/stagger_tile.dart';
-import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
-import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
-import '../../models/sneaker_model.dart';
-import '../../services/helper.dart';
-import '../shared/New_Shoes.dart';
+import '../../controllers/product_provider.dart';
 import '../shared/appstyle.dart';
 import '../shared/latest_shoes.dart';
 
@@ -24,32 +19,17 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
   late final TabController _tabController = TabController(length: 3, vsync: this);
 
 
-  late Future<List<Sneakers>> _male;
-  late Future<List<Sneakers>> _female;
-  late Future<List<Sneakers>> _kids;
-
-  void getMale(){
-    _male = Helper().getMaleSneaker();
-  }
-
-  void getFemale(){
-    _female = Helper().getFemaleSneaker();
-  }
-
-  void getKids(){
-    _kids = Helper().getKidsSneaker();
-  }
-
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _tabController.animateTo(widget.tabIndex, curve: Curves.easeIn);
-    getMale();
-    getFemale();
-    getKids();
+  }
+
+  @override
+  void dispose(){
+    _tabController.dispose();
+    super.dispose();
   }
 
 
@@ -63,6 +43,10 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
+    productNotifier.getFemale();
+    productNotifier.getKids();
+    productNotifier.getMale();
     return Scaffold(
       backgroundColor: const Color(0xFFE2E2E2),
       body: SizedBox(
@@ -78,7 +62,7 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                    padding: EdgeInsets.fromLTRB(6, 12, 16, 18),
+                    padding: const EdgeInsets.fromLTRB(6, 12, 16, 18),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -86,14 +70,14 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
                       onTap: (){
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.close,color: Colors.white,),
+                      child: const Icon(Icons.close,color: Colors.white,),
                     ),
                     GestureDetector(
                       onTap: (){
                         // Navigator.pop(context);
                         filter();
                       },
-                      child: Icon(Icons.view_list_rounded,color: Colors.white,),
+                      child: const Icon(Icons.view_list_rounded,color: Colors.white,),
                     )
                   ],
                 ),
@@ -127,13 +111,13 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
                   left: 16,
                   right: 12),
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderRadius: const BorderRadius.all(Radius.circular(16)),
                 child: TabBarView(
                   controller: _tabController,
                     children: [
-                      latestShoes(male: _male),
-                      latestShoes(male: _female),
-                      latestShoes(male: _kids),
+                      latestShoes(male: productNotifier.male),
+                      latestShoes(male: productNotifier.female),
+                      latestShoes(male: productNotifier.kids),
 
                     ]
                 ),
@@ -145,7 +129,7 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
     );
   }
   Future<dynamic> filter() async {
-    double _value = 0.0;
+    double value = 0.0;
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -154,7 +138,7 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
         builder: (context)=> Container(
           height: MediaQuery.of(context).size.height*0.84,
           width: double.maxFinite,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
@@ -163,14 +147,14 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
           ),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
 
               ),
               Container(
                 height: 5,
                 width: 40,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Colors.black38,
                 ),
@@ -180,14 +164,14 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
                 height: MediaQuery.of(context).size.height*0.7,
                 child: Column(
                   children: [
-                    CustomSpacer(),
+                    const CustomSpacer(),
                     Text("Filter",style: appstyle(40, Colors.black, FontWeight.bold),),
-                    CustomSpacer(),
+                    const CustomSpacer(),
                     Text("Gender",style: appstyle(20, Colors.black, FontWeight.bold),),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
-                    Row(
+                    const Row(
                       children: [
                         CatagoryBtn(buttonClr:Colors.black, label: "Men"),
 
@@ -204,7 +188,7 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
+                    const Row(
                       children: [
                         CatagoryBtn(
                           label: "Shoes",
@@ -227,20 +211,20 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
                     ),
                     const CustomSpacer(),
                     Slider(
-                        value: _value,
+                        value: value,
                         activeColor: Colors.black,
                         inactiveColor: Colors.grey,
                         thumbColor: Colors.black,
                         max: 500.0,
 
                         divisions: 50,
-                        label: _value.round().toString(),
+                        label: value.round().toString(),
                         onChanged: (double newvalue) {
                           setState(() {
-                            _value=newvalue;
+                            value=newvalue;
                           });
                         }),
-                    CustomSpacer(),
+                    const CustomSpacer(),
                     Text(
                       "Brand",
                       style: appstyle(20, Colors.black, FontWeight.bold),
@@ -249,18 +233,18 @@ class _ProductByCatState extends State<ProductByCat> with TickerProviderStateMix
                       height: 20,
                     ),
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       height: 80,
                       child: ListView.builder(
                           itemCount: brand.length,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.all(
+                                    borderRadius: const BorderRadius.all(
                                         Radius.circular(12))),
                                 child: Image.asset(
                                   brand[index],

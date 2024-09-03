@@ -1,14 +1,16 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:hive/hive.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
+import 'package:shoes/controllers/cart_provider.dart';
 import 'package:shoes/controllers/product_provider.dart';
 import 'package:shoes/views/shared/appstyle.dart';
+import 'package:shoes/views/ui/favorites.dart';
 
+import '../../controllers/favorites_provider.dart';
 import '../../models/sneaker_model.dart';
-import '../../services/helper.dart';
 import '../shared/checkout_btn.dart';
 
 class ProductPage extends StatefulWidget {
@@ -24,42 +26,23 @@ class _ProductPageState extends State<ProductPage> {
 
   final PageController pageController = PageController();
 
-  late Future<Sneakers> _sneaker;
-  final _cartBox = Hive.box('cart_box');
 
 
-  void getShoes() {
-    if (widget.category == "Men's Running") {
-      _sneaker = Helper().getMaleSneakerById(widget.id);
-    } else if (widget.category == "Women's Running") {
-      _sneaker = Helper().getFemaleSneakerById(widget.id);
-    } else {
-      _sneaker = Helper().getKidsSneakerById(widget.id);
-    }
-  }
-
-
-  Future<void> _createCart(Map<dynamic, dynamic> newCart) async {
-    await _cartBox.add(newCart);
-  }
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getShoes();
-  }
 
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
+    productNotifier.getShoes(widget.category, widget.id);
+    var cartNotifier = Provider.of<CartProvider>(context);
+    var favoritesNotifier = Provider.of<FavoritesNotifier>(context,listen: true);
+    favoritesNotifier.getFavorites();
     return Scaffold(
       body:  FutureBuilder<Sneakers>(
-        future: _sneaker,
+        future: productNotifier.sneaker,
         builder: (context,snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text("Error ${snapshot.error}");
           } else {
@@ -72,7 +55,7 @@ class _ProductPageState extends State<ProductPage> {
                       automaticallyImplyLeading: false,
                       leadingWidth: 0,
                       title: Padding(
-                        padding: EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.only(bottom: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -81,11 +64,11 @@ class _ProductPageState extends State<ProductPage> {
                                 Navigator.pop(context);
                                 productNotifier.shoeSizes.clear();
                               },
-                              child: Icon(Icons.close_outlined),
+                              child: const Icon(Icons.close_outlined),
                             ),
                             GestureDetector(
                               onTap: () {},
-                              child: Icon(Ionicons.ellipsis_horizontal,color: Colors.black,),
+                              child: const Icon(Ionicons.ellipsis_horizontal,color: Colors.black,),
                             ),
                           ],
                         ),
@@ -141,9 +124,31 @@ class _ProductPageState extends State<ProductPage> {
                                                 .size
                                                 .height * 0.12,
                                             right: 15,
-                                            child: Icon(
-                                              Ionicons.heart_outline,
-                                              color: Colors.grey,
+                                            child: Consumer<FavoritesNotifier>(
+                                              builder: (context,favoritesNotifier,child) {
+                                                return GestureDetector(
+                                                  onTap: (){
+                                                    if(favoritesNotifier.ids.contains(widget.id)){
+                                                      Navigator.push(context, MaterialPageRoute(
+                                                          builder: (context)=>const Favorites()));
+                                                    } else {
+                                                      favoritesNotifier.createFav({
+
+                                                        "id" : sneaker.id,
+                                                        "name": sneaker.name,
+                                                        "category": sneaker.category,
+                                                        "price": sneaker.price,
+                                                        "imageUrl": sneaker.imageUrl[0],
+
+                                                      });
+                                                    }
+                                                    setState(() {
+                                                    });
+                                                  },
+                                                  child: favoritesNotifier.ids.contains(sneaker.id) ?
+                                                  const Icon(Ionicons.heart):const Icon(Ionicons.heart_outline),
+                                                );
+                                              }
                                             )),
                                         Positioned(
                                           bottom: 0,
@@ -159,7 +164,7 @@ class _ProductPageState extends State<ProductPage> {
                                             children: List<Widget>.generate(
                                                 sneaker.imageUrl.length, (index) =>
                                                 Padding(
-                                                  padding: EdgeInsets.symmetric(
+                                                  padding: const EdgeInsets.symmetric(
                                                       horizontal: 4),
                                                   child: CircleAvatar(
                                                     radius: 5,
@@ -178,7 +183,7 @@ class _ProductPageState extends State<ProductPage> {
                             Positioned(
                               bottom: 30,
                               child:ClipRRect(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(30),
                                   topRight: Radius.circular(30),
                                 ),
@@ -187,7 +192,7 @@ class _ProductPageState extends State<ProductPage> {
                                   width: MediaQuery.of(context).size.width,
                                   color: Colors.white,
                                   child: Padding(
-                                    padding: EdgeInsets.all(12),
+                                    padding: const EdgeInsets.all(12),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -196,7 +201,7 @@ class _ProductPageState extends State<ProductPage> {
                                           children: [
                                             Text(sneaker.category,
                                             style: appstyle(20, Colors.grey, FontWeight.w500),),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 20,
 
                                             ),
@@ -211,7 +216,7 @@ class _ProductPageState extends State<ProductPage> {
                                               const EdgeInsets
                                                   .symmetric(
                                                   horizontal: 1),
-                                                itemBuilder:(context,_)=> Icon(Icons.star,size: 18,color: Colors.black,),
+                                                itemBuilder:(context,_)=> const Icon(Icons.star,size: 18,color: Colors.black,),
                                               onRatingUpdate: (rating){
 
                                               },
@@ -219,7 +224,7 @@ class _ProductPageState extends State<ProductPage> {
 
                                           ],
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 20,
                                         ),
                                         Row(
@@ -240,17 +245,17 @@ class _ProductPageState extends State<ProductPage> {
                                                     Colors.black,
                                                     FontWeight.w500),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 5,
                                                 ),
-                                                CircleAvatar(
+                                                const CircleAvatar(
                                                   radius: 7,
                                                     backgroundColor: Colors.black,
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 5,
                                                 ),
-                                                CircleAvatar(
+                                                const CircleAvatar(
                                                   radius: 7,
                                                   backgroundColor: Colors.red,
                                                 )
@@ -258,7 +263,7 @@ class _ProductPageState extends State<ProductPage> {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 20,
                                         ),
                                         Column(
@@ -416,7 +421,7 @@ class _ProductPageState extends State<ProductPage> {
                                                 top: 12),
                                             child: CheckoutButton(
                                               onTap: () async {
-                                                _createCart({
+                                                cartNotifier.createCart({
                                                   "id": sneaker.id,
                                                   "name": sneaker.name,
                                                   "category":

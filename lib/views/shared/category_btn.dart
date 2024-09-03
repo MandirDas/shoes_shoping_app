@@ -22,7 +22,7 @@ class CatagoryBtn extends StatelessWidget {
             color: buttonClr,
             style: BorderStyle.solid,
           ),
-          borderRadius: BorderRadius.all(Radius.circular(9)),
+          borderRadius: const BorderRadius.all(Radius.circular(9)),
         ),
         child: Center(
           child: Text(

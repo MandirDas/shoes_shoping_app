@@ -31,7 +31,7 @@ class HomeWidget extends StatelessWidget {
               future: _male,
               builder: (context,snapshot){
                 if(snapshot.connectionState == ConnectionState.waiting){
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }else if (snapshot.hasError){
                   return Text("Error ${snapshot.error}");
                 }else{
@@ -51,7 +51,7 @@ class HomeWidget extends StatelessWidget {
                           },
                           child: ProductCard(
                               price: "\$${shoe.price}",
-                              catagory: shoe.category,
+                              category: shoe.category,
                               id: shoe.id,
                               name: shoe.name,
                               image: shoe.imageUrl[0]),
@@ -79,7 +79,7 @@ class HomeWidget extends StatelessWidget {
                       children: [
                         Text("Show All",
                           style: appstyle(22, Colors.black, FontWeight.bold),),
-                        Icon(Icons.arrow_right_sharp,size: 30,)
+                        const Icon(Icons.arrow_right_sharp,size: 30,)
                       ],
                     ),
                   )
@@ -94,7 +94,7 @@ class HomeWidget extends StatelessWidget {
             future: _male,
             builder: (context,snapshot){
               if(snapshot.connectionState == ConnectionState.waiting){
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }else if (snapshot.hasError){
                 return Text("Error ${snapshot.error}");
               }else{

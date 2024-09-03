@@ -1,93 +1,74 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive/hive.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes/controllers/cart_provider.dart';
+import 'package:shoes/views/ui/mainscreen.dart';
 
 import '../shared/appstyle.dart';
 import '../shared/checkout_btn.dart';
 
-class CartPage extends StatelessWidget {
-CartPage({super.key});
+class CartPage extends StatefulWidget {
+  const CartPage({super.key});
 
-final _cartBox = Hive.box('cart_box');
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
 
-@override
-Widget build(BuildContext context) {
-  List<dynamic> cart = [];
-  final cartData = _cartBox.keys.map((key) {
-    final item = _cartBox.get(key);
-    return {
-      "key": key,
-      "id": item['id'],
-      "category": item['category'],
-      "name": item['name'],
-      "imageUrl": item['imageUrl'],
-      "price": item['price'],
-      "qty": item['qty'],
-      "sizes": item['sizes']
-    };
-  }).toList();
+class _CartPageState extends State<CartPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CartProvider>(context, listen: false).getCart();
+    });
+  }
 
-  cart = cartData.reversed.toList();
-  return Scaffold(
-    backgroundColor: const Color(0xFFE2E2E2),
-    body: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 40,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.black,
+  @override
+  Widget build(BuildContext context) {
+    var cartNotifier = Provider.of<CartProvider>(context);
+    // cartNotifier.getCart();
+    return Scaffold(
+      backgroundColor: const Color(0xFFE2E2E2),
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 40,
                 ),
-              ),
-              Text(
-                "My Cart",
-                style: appstyle(36, Colors.black, FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.65,
-                child: ListView.builder(
-                    itemCount: cart.length,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (context, index) {
-                      final data = cart[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: ClipRRect(
-                          borderRadius:
-                          const BorderRadius.all(Radius.circular(12)),
-                          child: Slidable(
-                            key: const ValueKey(0),
-                            endActionPane: ActionPane(
-                              motion: const ScrollMotion(),
-                              children: [
-                                SlidableAction(
-                                  flex: 1,
-                                  onPressed: doNothing,
-                                  backgroundColor: const Color(0xFF000000),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete,
-                                  label: 'Delete',
-                                ),
-                              ],
-                            ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  "My Cart",
+                  style: appstyle(36, Colors.black, FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: ListView.builder(
+                      itemCount: cartNotifier.cart.length,
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (context, index) {
+                        final data = cartNotifier.cart[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
                             child: Container(
-                              height:
-                              MediaQuery.of(context).size.height * 0.11,
+                              height: MediaQuery.of(context).size.height * 0.11,
                               width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
                                   color: Colors.grey.shade100,
@@ -100,33 +81,67 @@ Widget build(BuildContext context) {
                                   ]),
                               child: Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: CachedNetworkImage(
-                                          imageUrl: data['imageUrl'],
-                                          width: 70,
-                                          height: 70,
-                                          fit: BoxFit.fill,
-                                        ),
+                                      Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(12),
+                                            child: CachedNetworkImage(
+                                              imageUrl: data['imageUrl'],
+                                              width: 70,
+                                              height: 70,
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                          Positioned(
+                                              bottom: -2,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  cartNotifier
+                                                      .deleteCart(data['key']);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MainScreen()));
+                                                },
+                                                child: Container(
+                                                  height: 30,
+                                                  width: 40,
+                                                  decoration: const BoxDecoration(
+                                                    color: Colors.black,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    12)),
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons
+                                                        .delete_forever_outlined,
+                                                    size: 20,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
                                             top: 12, left: 20),
                                         child: Column(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               data['name'],
-                                              style: appstyle(
-                                                  16,
-                                                  Colors.black,
+                                              style: appstyle(16, Colors.black,
                                                   FontWeight.bold),
                                             ),
                                             const SizedBox(
@@ -187,12 +202,12 @@ Widget build(BuildContext context) {
                                                   Radius.circular(16))),
                                           child: Column(
                                             mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               InkWell(
                                                   onTap: () {
-                                                    // cartProvider.increment();
+                                                    cartNotifier
+                                                        .decrement(data['key']);
                                                   },
                                                   child: const Icon(
                                                     Icons.remove_circle_sharp,
@@ -207,9 +222,10 @@ Widget build(BuildContext context) {
                                                   FontWeight.w600,
                                                 ),
                                               ),
-                                              InkWell(
+                                              GestureDetector(
                                                   onTap: () {
-                                                    // cartProvider.decrement();
+                                                    cartNotifier
+                                                        .increment(data['key']);
                                                   },
                                                   child: const Icon(
                                                     Icons.add_circle_sharp,
@@ -228,20 +244,20 @@ Widget build(BuildContext context) {
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
-              )
-            ],
-          ),
-          const Align(alignment: Alignment.bottomCenter,
-            child: CheckoutButton(label: "Proceed to Checkout"),),
-        ],
+                        );
+                      }),
+                )
+              ],
+            ),
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: CheckoutButton(label: "Proceed to Checkout"),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-void doNothing(BuildContext context) {}
+  void doNothing(BuildContext context) {}
 }
-
