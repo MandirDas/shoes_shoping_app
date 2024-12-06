@@ -15,10 +15,6 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
-
-
-
-
   @override
   Widget build(BuildContext context) {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
@@ -82,42 +78,63 @@ class _FavoritesState extends State<Favorites> {
                                       width: 70,
                                       height: 70,
                                       fit: BoxFit.fill,
-
                                     ),
                                   ),
-
-                                  Padding(padding: const EdgeInsets.only(top: 12,left: 20),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(shoe['name'],style: appstyle(16, Colors.black, FontWeight.bold),),
-                                      const SizedBox(
-                                        height: 2,
-                                      ),
-                                      Text(shoe['category'],style: appstyle(14, Colors.grey, FontWeight.w600),),
-                                      const SizedBox(
-                                        height: 2,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('${shoe['price']}',style: appstyle(18, Colors.black, FontWeight.bold),),
-                                        ],
-                                      ),
-                                    ],
-                                  ),)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 12, left: 20),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          shoe['name'],
+                                          style: appstyle(16, Colors.black,
+                                              FontWeight.bold),
+                                        ),
+                                        const SizedBox(
+                                          height: 2,
+                                        ),
+                                        Text(
+                                          shoe['category'],
+                                          style: appstyle(
+                                              14, Colors.grey, FontWeight.w600),
+                                        ),
+                                        const SizedBox(
+                                          height: 2,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '\$${shoe['price']}',
+                                              style: appstyle(18, Colors.black,
+                                                  FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
-                              Padding(padding: const EdgeInsets.all(8),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
                                 child: GestureDetector(
-                                  onTap: (){
+                                  onTap: () {
                                     favoritesNotifier.deleteFav(shoe['key']);
-                                    favoritesNotifier.ids.removeWhere((element) => element == shoe['id']);
-                                    Navigator.push(context, MaterialPageRoute(
-                                        builder: (context) => MainScreen()));
+                                    favoritesNotifier.ids.removeWhere(
+                                        (element) => element == shoe['id']);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                MainScreen()));
                                   },
                                   child: const Icon(Ionicons.heart_dislike),
-                                ),),
+                                ),
+                              ),
                             ],
                           ),
                         ),

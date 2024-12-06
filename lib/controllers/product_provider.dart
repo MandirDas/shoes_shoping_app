@@ -45,6 +45,7 @@ class ProductNotifier extends ChangeNotifier {
   late Future<List<Sneakers>> female;
   late Future<List<Sneakers>> kids;
   late Future<Sneakers> sneaker;
+  late Future<List<Sneakers>> search;
 
   void getMale() {
     male = Helper().getMaleSneaker();
@@ -58,6 +59,11 @@ class ProductNotifier extends ChangeNotifier {
     kids = Helper().getKidsSneaker();
   }
 
+  void searchSneaker(String query) {
+    search = Helper().searchSneaker(query);
+    notifyListeners();
+  }
+
   void getShoes(String category, String id) {
     if (category == "Men's Running") {
       sneaker = Helper().getMaleSneakerById(id);
@@ -66,5 +72,16 @@ class ProductNotifier extends ChangeNotifier {
     } else {
       sneaker = Helper().getKidsSneakerById(id);
     }
+  }
+
+  ProductNotifier() {
+    // Initialize search with an empty list or a default value
+    search = Future.value([]);
+  }
+
+  // Method to update search results
+  void updateSearch(Future<List<Sneakers>> newSearch) {
+    search = newSearch;
+    notifyListeners();
   }
 }

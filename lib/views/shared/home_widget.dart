@@ -9,16 +9,15 @@ import '../../models/sneaker_model.dart';
 import 'New_Shoes.dart';
 import 'appstyle.dart';
 
-
 class HomeWidget extends StatelessWidget {
   const HomeWidget({
     super.key,
-    required Future<List<Sneakers>> male, required this.tabIndex,
+    required Future<List<Sneakers>> male,
+    required this.tabIndex,
   }) : _male = male;
 
   final Future<List<Sneakers>> _male;
   final int tabIndex;
-
 
   @override
   Widget build(BuildContext context) {
@@ -26,28 +25,30 @@ class HomeWidget extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-            height: MediaQuery.of(context).size.height*0.405,
+            height: MediaQuery.of(context).size.height * 0.405,
             child: FutureBuilder<List<Sneakers>>(
               future: _male,
-              builder: (context,snapshot){
-                if(snapshot.connectionState == ConnectionState.waiting){
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
-                }else if (snapshot.hasError){
+                } else if (snapshot.hasError) {
                   return Text("Error ${snapshot.error}");
-                }else{
+                } else {
                   final male = snapshot.data;
                   return ListView.builder(
                       itemCount: male!.length,
                       scrollDirection: Axis.horizontal,
-                      itemBuilder: (context,index){
+                      itemBuilder: (context, index) {
                         final shoe = snapshot.data![index];
                         return GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             productNotifier.shoesSizes = shoe.sizes;
                             // print(productNotifier.shoeSizes);
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context)=> ProductPage(
-                                    id: shoe.id, category: shoe.category)));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProductPage(
+                                        id: shoe.id, category: shoe.category)));
                           },
                           child: ProductCard(
                               price: "\$${shoe.price}",
@@ -59,8 +60,7 @@ class HomeWidget extends StatelessWidget {
                       });
                 }
               },
-            )
-        ),
+            )),
         Column(
           children: [
             Padding(
@@ -68,18 +68,29 @@ class HomeWidget extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Latest Shoes",
-                    style: appstyle(24, Colors.black, FontWeight.bold),),
-
+                  Text(
+                    "Latest Shoes",
+                    style: appstyle(24, Colors.black, FontWeight.bold),
+                  ),
                   GestureDetector(
-                    onTap: (){
-                      Navigator.push(context,MaterialPageRoute(builder: (context)=>ProductByCat(tabIndex:tabIndex ,)));
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProductByCat(
+                                    tabIndex: tabIndex,
+                                  )));
                     },
                     child: Row(
                       children: [
-                        Text("Show All",
-                          style: appstyle(22, Colors.black, FontWeight.bold),),
-                        const Icon(Icons.arrow_right_sharp,size: 30,)
+                        Text(
+                          "Show All",
+                          style: appstyle(22, Colors.black, FontWeight.bold),
+                        ),
+                        const Icon(
+                          Icons.arrow_right_sharp,
+                          size: 30,
+                        )
                       ],
                     ),
                   )
@@ -89,25 +100,24 @@ class HomeWidget extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: MediaQuery.of(context).size.height*0.13,
+          height: MediaQuery.of(context).size.height * 0.13,
           child: FutureBuilder<List<Sneakers>>(
             future: _male,
-            builder: (context,snapshot){
-              if(snapshot.connectionState == ConnectionState.waiting){
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
-              }else if (snapshot.hasError){
+              } else if (snapshot.hasError) {
                 return Text("Error ${snapshot.error}");
-              }else{
+              } else {
                 final male = snapshot.data;
                 return ListView.builder(
                     itemCount: male!.length,
                     scrollDirection: Axis.horizontal,
-                    itemBuilder: (context,index){
+                    itemBuilder: (context, index) {
                       final shoe = snapshot.data![index];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: NewShoes(
-                            imageUrl: shoe.imageUrl[0]),
+                        child: NewShoes(imageUrl: shoe.imageUrl[0]),
                       );
                     });
               }

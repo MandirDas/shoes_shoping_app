@@ -1,39 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes/controllers/product_provider.dart';
+import 'package:shoes/models/sneaker_model.dart';
 import 'package:shoes/views/shared/stagger_tile.dart';
 import 'package:shoes/views/ui/product_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
-import '../../models/sneaker_model.dart';
+class SearchWidget extends StatefulWidget {
+  const SearchWidget({super.key, required this.searchResults});
 
-class latestShoes extends StatelessWidget {
-  const latestShoes({
-    super.key,
-    required Future<List<Sneakers>> male,
-  }) : _male = male;
+  final Future<List<Sneakers>> searchResults;
 
-  final Future<List<Sneakers>> _male;
+  @override
+  _SearchWidgetState createState() => _SearchWidgetState();
+}
 
+class _SearchWidgetState extends State<SearchWidget> {
   @override
   Widget build(BuildContext context) {
     var productNotifier = Provider.of<ProductNotifier>(context);
+    // productNotifier.clearShoeSizes();
     return FutureBuilder<List<Sneakers>>(
-      future: _male,
+      future: widget.searchResults,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Text("Error ${snapshot.error}");
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No results found'));
         } else {
-          final male = snapshot.data;
           return StaggeredGridView.countBuilder(
               padding: EdgeInsets.zero,
               crossAxisCount: 2,
               crossAxisSpacing: 20,
               mainAxisSpacing: 16,
-              itemCount: male!.length,
+              itemCount: snapshot.data!.length,
               scrollDirection: Axis.vertical,
               staggeredTileBuilder: (index) => StaggeredTile.extent(
                   (index % 2 == 0) ? 1 : 1,
@@ -53,6 +56,7 @@ class latestShoes extends StatelessWidget {
                                     id: shoe.id,
                                     category: shoe.category,
                                   )));
+                      // productNotifier.shoeSizes.clear();
                     },
                     child: StaggerTile(
                         imageUrl: shoe.imageUrl[0],

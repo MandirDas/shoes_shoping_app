@@ -112,7 +112,8 @@ class _CartPageState extends State<CartPage> {
                                                 child: Container(
                                                   height: 30,
                                                   width: 40,
-                                                  decoration: const BoxDecoration(
+                                                  decoration:
+                                                      const BoxDecoration(
                                                     color: Colors.black,
                                                     borderRadius:
                                                         BorderRadius.only(
@@ -152,15 +153,15 @@ class _CartPageState extends State<CartPage> {
                                               style: appstyle(14, Colors.grey,
                                                   FontWeight.w600),
                                             ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
+                                            // const SizedBox(
+                                            //   height: 5,
+                                            // ),
                                             Row(
                                               children: [
                                                 Text(
-                                                  data['price'],
+                                                  '\$${data['price']}',
                                                   style: appstyle(
-                                                      18,
+                                                      16,
                                                       Colors.black,
                                                       FontWeight.w600),
                                                 ),
@@ -170,7 +171,7 @@ class _CartPageState extends State<CartPage> {
                                                 Text(
                                                   "Size",
                                                   style: appstyle(
-                                                      18,
+                                                      16,
                                                       Colors.grey,
                                                       FontWeight.w600),
                                                 ),
@@ -180,7 +181,7 @@ class _CartPageState extends State<CartPage> {
                                                 Text(
                                                   data['sizes'],
                                                   style: appstyle(
-                                                      18,
+                                                      16,
                                                       Colors.grey,
                                                       FontWeight.w600),
                                                 ),

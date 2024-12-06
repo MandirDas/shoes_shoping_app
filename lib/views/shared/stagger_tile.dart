@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:shoes/views/shared/appstyle.dart';
 
 class StaggerTile extends StatefulWidget {
-  const StaggerTile({super.key, required this.imageUrl, required this.name, required this.price});
+  const StaggerTile(
+      {super.key,
+      required this.imageUrl,
+      required this.name,
+      required this.price});
 
   final String imageUrl;
   final String name;
@@ -19,7 +23,7 @@ class _StaggerTileState extends State<StaggerTile> {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderRadius: BorderRadius.all(Radius.circular(30)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -28,11 +32,22 @@ class _StaggerTileState extends State<StaggerTile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl,
-              fit: BoxFit.fill,),
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.imageUrl,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(
+                      color: Colors.black,
+                      strokeWidth: 2,
+                    ),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             ),
-
             Container(
               padding: const EdgeInsets.only(top: 12),
               height: 80,
@@ -40,8 +55,14 @@ class _StaggerTileState extends State<StaggerTile> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.name,style: appstylewithHT(20, Colors.black, FontWeight.w700,1),),
-                  Text(widget.price,style: appstylewithHT(20, Colors.black, FontWeight.w500,1),),
+                  Text(
+                    widget.name,
+                    style: appstylewithHT(20, Colors.black, FontWeight.w700, 1),
+                  ),
+                  Text(
+                    widget.price,
+                    style: appstylewithHT(20, Colors.black, FontWeight.w500, 1),
+                  ),
                 ],
               ),
             )

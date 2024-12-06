@@ -44,6 +44,11 @@ class CartProvider extends ChangeNotifier {
   void increment(int key) {
     final item = _cartBox.get(key);
     item['qty'] += 1;
+    double price = double.parse(item['price']);
+    price = price /
+        (item['qty'] - 1) *
+        item['qty']; // Adjust price based on new quantity
+    item['price'] = '$price';
     _cartBox.put(key, item);
     getCart();
   }
@@ -52,6 +57,9 @@ class CartProvider extends ChangeNotifier {
     final item = _cartBox.get(key);
     if (item['qty'] > 1) {
       item['qty'] -= 1;
+      double price = double.parse(item['price']);
+      price = price / (item['qty'] + 1) * item['qty'];
+      item['price'] = '$price';
       _cartBox.put(key, item);
       getCart();
     }
